@@ -1,6 +1,6 @@
 name: Tests
 
-on: pull_request
+on: push
 
 jobs:
   test:
@@ -14,4 +14,4 @@ jobs:
       - name: Install and test
         run: |
           yarn --frozen-lockfile
-          yarn test:app
+          yarn test:all

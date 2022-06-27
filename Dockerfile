@@ -1,17 +1,11 @@
-FROM node:14-alpine AS build
+FROM node:18
 
-WORKDIR /opt/node_app
+WORKDIR /excalidraw
 
 COPY package.json yarn.lock ./
-RUN yarn --ignore-optional
+RUN yarn
 
 ARG NODE_ENV=production
 
 COPY . .
 RUN yarn build:app:docker
-
-FROM nginx:1.21-alpine
-
-COPY --from=build /opt/node_app/build /usr/share/nginx/html
-
-HEALTHCHECK CMD wget -q -O /dev/null http://localhost || exit 1
