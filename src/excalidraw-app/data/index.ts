@@ -24,7 +24,6 @@ import {
   ROOM_ID_BYTES,
 } from "../app_constants";
 import { encodeFilesForUpload } from "./FileManager";
-import { saveFilesToFirebase } from "./firebase";
 
 export type SyncableExcalidrawElement = ExcalidrawElement & {
   _brand: "SyncableExcalidrawElement";
@@ -312,10 +311,10 @@ export const exportToBackend = async (
       url.hash = `json=${json.id},${encryptionKey}`;
       const urlString = url.toString();
 
-      await saveFilesToFirebase({
-        prefix: `/files/shareLinks/${json.id}`,
-        files: filesToUpload,
-      });
+      // await saveFilesToFirebase({
+      //   prefix: `/files/shareLinks/${json.id}`,
+      //   files: filesToUpload,
+      // });
 
       window.prompt(`🔒${t("alerts.uploadedSecurly")}`, urlString);
     } else if (json.error_class === "RequestTooLargeError") {

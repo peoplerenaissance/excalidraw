@@ -1,6 +1,6 @@
 services:
   base:
-    image: node:18
+    image: node:16
     working_dir: /excalidraw
     volumes:
       # Mount local version of `excalidraw` code

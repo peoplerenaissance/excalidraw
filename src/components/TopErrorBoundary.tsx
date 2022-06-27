@@ -1,5 +1,4 @@
 import React from "react";
-import * as Sentry from "@sentry/browser";
 import { t } from "../i18n";
 
 interface TopErrorBoundaryState {
@@ -19,7 +18,7 @@ export class TopErrorBoundary extends React.Component<
   };
 
   render() {
-    return this.state.hasError ? this.errorSplash() : this.props.children;
+    return this.state.hasError ? this.errorSplash() : null;
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
@@ -31,17 +30,6 @@ export class TopErrorBoundary extends React.Component<
         _localStorage[key] = value;
       }
     }
-
-    Sentry.withScope((scope) => {
-      scope.setExtras(errorInfo);
-      const eventId = Sentry.captureException(error);
-
-      this.setState((state) => ({
-        hasError: true,
-        sentryEventId: eventId,
-        localStorage: JSON.stringify(_localStorage),
-      }));
-    });
   }
 
   private selectTextArea(event: React.MouseEvent<HTMLTextAreaElement>) {
