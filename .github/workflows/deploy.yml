@@ -23,6 +23,8 @@ jobs:
       - name: Build
         id: build
         if: steps.install.outcome == 'success'
+        env:
+          CI: false
         run: yarn build
 
       - name: Configure AWS credentials
