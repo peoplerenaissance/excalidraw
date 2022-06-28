@@ -25,6 +25,9 @@ jobs:
         if: steps.install.outcome == 'success'
         env:
           CI: false
+          REACT_APP_LIBRARY_BACKEND: ${{ secrets.REACT_APP_LIBRARY_BACKEND }}
+          REACT_APP_LIBRARY_URL: ${{ secrets.REACT_APP_LIBRARY_URL }}
+          REACT_APP_WS_SERVER_URL: ${{ secrets.REACT_APP_WS_SERVER_URL }}
         run: yarn build
 
       - name: Configure AWS credentials
