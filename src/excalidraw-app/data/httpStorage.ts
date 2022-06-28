@@ -71,44 +71,45 @@ export const saveToHttpStorage = async (
 
   const sceneVersion = getSceneVersion(elements);
 
-  const HTTP_STORAGE_BACKEND_URL =
-    process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
-  const getResponse = await fetch(
-    `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
-  );
-  if (!getResponse.ok && getResponse.status !== 404) {
-    return false;
-  }
-
-  // If room already exist, we compare scene versions to check
-  // if we're up to date before saving our scene
-  if (getResponse.ok) {
-    const buffer = await getResponse.arrayBuffer();
-    const existingElements = await getElementsFromBuffer(buffer, roomKey);
-
-    if (getSceneVersion(existingElements) >= sceneVersion) {
+  try {
+    const HTTP_STORAGE_BACKEND_URL =
+      process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
+    const getResponse = await fetch(
+      `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
+    );
+    if (!getResponse.ok && getResponse.status !== 404) {
       return false;
     }
-  }
 
-  const { ciphertext, iv } = await encryptElements(roomKey, elements);
+    // If room already exist, we compare scene versions to check
+    // if we're up to date before saving our scene
+    if (getResponse.ok) {
+      const buffer = await getResponse.arrayBuffer();
+      const existingElements = await getElementsFromBuffer(buffer, roomKey);
 
-  // Concatenate IV with encrypted data (IV does not have to be secret).
-  const payloadBlob = new Blob([iv.buffer, ciphertext]);
-  const payload = await new Response(payloadBlob).arrayBuffer();
-  const putResponse = await fetch(
-    `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
-    {
-      method: "PUT",
-      body: payload,
-    },
-  );
+      if (getSceneVersion(existingElements) >= sceneVersion) {
+        return false;
+      }
+    }
 
-  if (putResponse.ok) {
-    httpStorageSceneVersionCache.set(socket, sceneVersion);
-    return true;
-  }
+    const { ciphertext, iv } = await encryptElements(roomKey, elements);
 
+    // Concatenate IV with encrypted data (IV does not have to be secret).
+    const payloadBlob = new Blob([iv.buffer, ciphertext]);
+    const payload = await new Response(payloadBlob).arrayBuffer();
+    const putResponse = await fetch(
+      `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
+      {
+        method: "PUT",
+        body: payload,
+      },
+    );
+
+    if (putResponse.ok) {
+      httpStorageSceneVersionCache.set(socket, sceneVersion);
+      return true;
+    }
+  } catch {}
   return false;
 };
 
@@ -117,21 +118,24 @@ export const loadFromHttpStorage = async (
   roomKey: string,
   socket: SocketIOClient.Socket | null,
 ): Promise<readonly ExcalidrawElement[] | null> => {
-  console.log("loading", roomId, roomKey);
-  const HTTP_STORAGE_BACKEND_URL =
-    process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
-  const getResponse = await fetch(
-    `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
-  );
+  try {
+    const HTTP_STORAGE_BACKEND_URL =
+      process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
+    const getResponse = await fetch(
+      `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
+    );
 
-  const buffer = await getResponse.arrayBuffer();
-  const elements = await getElementsFromBuffer(buffer, roomKey);
+    const buffer = await getResponse.arrayBuffer();
+    const elements = await getElementsFromBuffer(buffer, roomKey);
 
-  if (socket) {
-    httpStorageSceneVersionCache.set(socket, getSceneVersion(elements));
+    if (socket) {
+      httpStorageSceneVersionCache.set(socket!, getSceneVersion(elements));
+    }
+
+    return restoreElements(elements, null);
+  } catch {
+    return restoreElements(null, null);
   }
-
-  return restoreElements(elements, null);
 };
 
 const getElementsFromBuffer = async (

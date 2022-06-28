@@ -3,7 +3,6 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { trackEvent } from "../analytics";
 import { getDefaultAppState } from "../appState";
 import { ErrorDialog } from "../components/ErrorDialog";
-import { TopErrorBoundary } from "../components/TopErrorBoundary";
 import {
   APP_NAME,
   COOKIES,
@@ -185,31 +184,6 @@ const initializeScene = async (opts: {
   }
   return { scene: null, isExternalScene: false };
 };
-
-const PlusLPLinkJSX = (
-  <p style={{ direction: "ltr", unicodeBidi: "embed" }}>
-    Introducing Excalidraw+
-    <br />
-    <a
-      href="https://plus.excalidraw.com/plus?utm_source=excalidraw&utm_medium=banner&utm_campaign=launch"
-      target="_blank"
-      rel="noreferrer"
-    >
-      Try out now!
-    </a>
-  </p>
-);
-
-const PlusAppLinkJSX = (
-  <a
-    href={`${process.env.REACT_APP_PLUS_APP}/#excalidraw-redirect`}
-    target="_blank"
-    rel="noreferrer"
-    className="plus-button"
-  >
-    Go to Excalidraw+
-  </a>
-);
 
 const ExcalidrawWrapper = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -533,27 +507,6 @@ const ExcalidrawWrapper = () => {
     }
   };
 
-  const renderTopRightUI = useCallback(
-    (isMobile: boolean, appState: AppState) => {
-      if (isMobile) {
-        return null;
-      }
-
-      return (
-        <div
-          style={{
-            width: isExcalidrawPlusSignedUser ? "21ch" : "23ch",
-            fontSize: "0.7em",
-            textAlign: "center",
-          }}
-        >
-          {isExcalidrawPlusSignedUser ? PlusAppLinkJSX : PlusLPLinkJSX}
-        </div>
-      );
-    },
-    [],
-  );
-
   const renderFooter = useCallback(
     (isMobile: boolean) => {
       const renderEncryptedIcon = () => (
@@ -605,9 +558,7 @@ const ExcalidrawWrapper = () => {
                   : "1px dashed #aaa",
                 borderRadius: 12,
               }}
-            >
-              {isExcalidrawPlusSignedUser ? PlusAppLinkJSX : PlusLPLinkJSX}
-            </div>
+            ></div>
           </div>
         );
       }
@@ -663,7 +614,6 @@ const ExcalidrawWrapper = () => {
             },
           },
         }}
-        renderTopRightUI={renderTopRightUI}
         renderFooter={renderFooter}
         langCode={langCode}
         renderCustomStats={renderCustomStats}
@@ -690,11 +640,9 @@ const ExcalidrawWrapper = () => {
 
 const ExcalidrawApp = () => {
   return (
-    <TopErrorBoundary>
-      <CollabContextConsumer>
-        <ExcalidrawWrapper />
-      </CollabContextConsumer>
-    </TopErrorBoundary>
+    <CollabContextConsumer>
+      <ExcalidrawWrapper />
+    </CollabContextConsumer>
   );
 };
 
