@@ -19,49 +19,106 @@
     ]
   },
   "dependencies": {
+    "@babel/core": "7.12.3",
     "@babel/runtime": "7.18.6",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
+    "@svgr/webpack": "5.5.0",
     "@testing-library/jest-dom": "5.16.2",
     "@testing-library/react": "12.1.5",
     "@tldraw/vec": "1.4.3",
     "@types/jest": "27.4.0",
+    "@types/lodash": "4.14.182",
     "@types/pica": "5.1.3",
     "@types/react": "17.0.39",
     "@types/react-dom": "17.0.11",
+    "@types/lodash.throttle": "4.1.7",
+    "@types/pako": "2.0.0",
     "@types/socket.io-client": "1.4.36",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.6.0",
+    "babel-loader": "8.1.0",
+    "babel-plugin-named-asset-import": "^0.3.7",
+    "babel-preset-react-app": "^10.0.0",
+    "bfj": "^7.0.2",
     "browser-fs-access": "0.30.1",
+    "camelcase": "^6.1.0",
+    "case-sensitive-paths-webpack-plugin": "2.3.0",
     "clsx": "1.1.1",
+    "css-loader": "4.3.0",
+    "dotenv": "8.2.0",
+    "dotenv-expand": "5.1.0",
+    "eslint": "^7.11.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-testing-library": "^3.9.2",
+    "eslint-webpack-plugin": "^2.5.2",
     "fake-indexeddb": "3.1.7",
+    "file-loader": "6.1.1",
+    "fs-extra": "^9.0.1",
+    "html-webpack-plugin": "4.5.0",
     "i18next-browser-languagedetector": "6.1.2",
     "idb-keyval": "6.0.3",
+    "identity-obj-proxy": "3.0.0",
     "image-blob-reduce": "3.0.1",
+    "jest": "26.6.0",
+    "jest-circus": "26.6.0",
+    "jest-resolve": "26.6.0",
+    "jest-watch-typeahead": "0.6.1",
     "jotai": "1.6.4",
     "lodash.throttle": "4.1.1",
+    "mini-css-extract-plugin": "0.11.3",
     "nanoid": "3.3.3",
     "open-color": "1.9.1",
+    "optimize-css-assets-webpack-plugin": "5.0.4",
     "pako": "1.0.11",
     "perfect-freehand": "1.0.16",
     "png-chunk-text": "1.0.0",
     "png-chunks-encode": "1.0.0",
     "png-chunks-extract": "1.0.0",
+    "pnp-webpack-plugin": "1.6.4",
     "points-on-curve": "0.2.0",
+    "postcss-flexbugs-fixes": "4.2.1",
+    "postcss-loader": "3.0.0",
+    "postcss-normalize": "8.0.1",
+    "postcss-preset-env": "6.7.0",
+    "postcss-safe-parser": "5.0.2",
+    "prompts": "2.4.0",
     "pwacompat": "2.0.17",
     "react": "17.0.2",
+    "react-app-polyfill": "^2.0.0",
+    "react-dev-utils": "^11.0.3",
     "react-dom": "17.0.2",
-    "react-scripts": "4.0.3",
+    "react-refresh": "^0.8.3",
+    "resolve": "1.18.1",
+    "resolve-url-loader": "^3.1.2",
     "roughjs": "4.5.2",
     "sass": "1.51.0",
+    "sass-loader": "^10.0.5",
+    "semver": "7.3.2",
     "socket.io-client": "4.5.1",
-    "typescript": "4.5.5"
+    "style-loader": "1.3.0",
+    "terser-webpack-plugin": "4.2.3",
+    "ts-pnp": "1.2.0",
+    "typescript": "4.5.5",
+    "url-loader": "4.1.1",
+    "webpack": "4.44.2",
+    "webpack-dev-server": "3.11.1",
+    "webpack-manifest-plugin": "2.2.0",
+    "workbox-webpack-plugin": "5.1.4"
   },
   "devDependencies": {
     "@excalidraw/eslint-config": "1.0.0",
     "@excalidraw/prettier-config": "1.0.2",
     "@types/chai": "4.3.0",
-    "@types/lodash.throttle": "4.1.6",
-    "@types/pako": "1.0.3",
     "@types/resize-observer-browser": "0.1.6",
     "chai": "4.3.6",
-    "dotenv": "10.0.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-prettier": "3.3.1",
     "jest-canvas-mock": "2.4.0",
@@ -78,8 +135,53 @@
   },
   "homepage": ".",
   "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jsdom",
+    "testRunner": "/excalidraw/node_modules/jest-circus/runner.js",
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
     "transformIgnorePatterns": [
       "node_modules/(?!(roughjs|points-on-curve|path-data-parser|points-on-path|browser-fs-access)/)"
+    ],
+    "modulePaths": [],
+    "moduleNameMapper": {
+      "^react-native$": "react-native-web",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
     ],
     "resetMocks": false
   },
@@ -87,20 +189,27 @@
   "prettier": "@excalidraw/prettier-config",
   "private": true,
   "scripts": {
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
+    "build": "node scripts/build.js",
     "fix:code": "yarn test:code --fix",
     "fix:other": "yarn prettier --write",
     "fix": "yarn fix:other && yarn fix:code",
     "prettier": "prettier \"**/*.{css,scss,json,md,html,yml}\" --ignore-path=.eslintignore",
-    "start": "react-scripts start",
+    "start": "node scripts/start.js",
     "test:all": "yarn test:typecheck && yarn test:code && yarn test:other && yarn test:app --watchAll=false",
-    "test:app": "react-scripts test --passWithNoTests",
+    "test:app": "node scripts/test.js --passWithNoTests",
     "test:code": "eslint --max-warnings=0 --ext .js,.ts,.tsx .",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "test:other": "yarn prettier --list-different",
     "test:typecheck": "tsc",
     "test:update": "yarn test:app --updateSnapshot --watchAll=false",
     "test": "yarn test:app"
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
   }
 }

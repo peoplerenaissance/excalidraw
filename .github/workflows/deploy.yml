@@ -1,0 +1,38 @@
+name: CI/CD
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+
+      - name: Install and test
+        id: test
+        run: |
+          yarn
+          yarn test:app
+      
+      - name: Build
+        id: build
+        if: steps.test.outcome == 'success'
+        run: yarn build
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy
+        if: steps.build.outcome == 'success'
+        run: aws s3 sync ${PWD}/build ${{ secrets.STATIC_S3_BUCKET }}/${{ github.sha }}

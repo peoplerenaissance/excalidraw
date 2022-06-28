@@ -78,21 +78,21 @@ module.exports = {
     ],
   },
   optimization: {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        test: /\.js($|\?)/i,
-      }),
-    ],
-    splitChunks: {
-      chunks: "async",
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          name: "vendor",
-        },
-      },
-    },
+    minimize: false,
+    // minimizer: [
+    //   new TerserPlugin({
+    //     test: /\.js($|\?)/i,
+    //   }),
+    // ],
+    // splitChunks: {
+    //   chunks: "async",
+    //   cacheGroups: {
+    //     vendors: {
+    //       test: /[\\/]node_modules[\\/]/,
+    //       name: "vendor",
+    //     },
+    //   },
+    // },
   },
   plugins: [
     ...(process.env.ANALYZER === "true" ? [new BundleAnalyzerPlugin()] : []),
