@@ -23,6 +23,7 @@ import {
   FILE_UPLOAD_MAX_BYTES,
   ROOM_ID_BYTES,
 } from "../app_constants";
+import { getStorageBackend } from "./config";
 import { encodeFilesForUpload } from "./FileManager";
 
 export type SyncableExcalidrawElement = ExcalidrawElement & {
@@ -299,7 +300,7 @@ export const exportToBackend = async (
       maxBytes: FILE_UPLOAD_MAX_BYTES,
     });
 
-    const response = await fetch(BACKEND_V2_POST, {
+    const response = await fetch(BACKEND_V2_POST as string, {
       method: "POST",
       body: payload.buffer,
     });
@@ -311,10 +312,11 @@ export const exportToBackend = async (
       url.hash = `json=${json.id},${encryptionKey}`;
       const urlString = url.toString();
 
-      // await saveFilesToFirebase({
-      //   prefix: `/files/shareLinks/${json.id}`,
-      //   files: filesToUpload,
-      // });
+      const storageBackend = await getStorageBackend();
+      await storageBackend.saveFilesToStorageBackend({
+        prefix: `/files/shareLinks/${json.id}`,
+        files: filesToUpload,
+      });
 
       window.prompt(`🔒${t("alerts.uploadedSecurly")}`, urlString);
     } else if (json.error_class === "RequestTooLargeError") {

@@ -8,7 +8,10 @@ import {
   ExcalidrawElement,
   InitializedExcalidrawImageElement,
 } from "../../element/types";
-import { getSceneVersion } from "../../packages/excalidraw/index";
+import {
+  getSceneVersion,
+  restoreElements,
+} from "../../packages/excalidraw/index";
 import { Collaborator, Gesture } from "../../types";
 import {
   getFrame,
@@ -63,6 +66,7 @@ import {
 import { decryptData } from "../../data/encryption";
 import { resetBrowserStateVersions } from "../data/tabSync";
 import { LocalData } from "../data/LocalData";
+import { getStorageBackend } from "../data/config";
 
 interface CollabState {
   modalIsShown: boolean;
@@ -124,27 +128,33 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
     };
     this.portal = new Portal(this);
     this.fileManager = new FileManager({
-      // getFiles: async (fileIds) => {
-      //   const { roomId, roomKey } = this.portal;
-      //   if (!roomId || !roomKey) {
-      //     throw new AbortError();
-      //   }
-      //   // return loadFilesFromFirebase(`files/rooms/${roomId}`, roomKey, fileIds);
-      // },
-      // saveFiles: async ({ addedFiles }) => {
-      //   const { roomId, roomKey } = this.portal;
-      //   if (!roomId || !roomKey) {
-      //     throw new AbortError();
-      //   }
-      //   // return saveFilesToFirebase({
-      //   //   prefix: `${FIREBASE_STORAGE_PREFIXES.collabFiles}/${roomId}`,
-      //   //   files: await encodeFilesForUpload({
-      //   //     files: addedFiles,
-      //   //     encryptionKey: roomKey,
-      //   //     maxBytes: FILE_UPLOAD_MAX_BYTES,
-      //   //   }),
-      //   // });
-      // },
+      getFiles: async (fileIds) => {
+        const { roomId, roomKey } = this.portal;
+        if (!roomId || !roomKey) {
+          throw new AbortError();
+        }
+        const storageBackend = await getStorageBackend();
+        return storageBackend.loadFilesFromStorageBackend(
+          `files/rooms/${roomId}`,
+          roomKey,
+          fileIds,
+        );
+      },
+      saveFiles: async ({ addedFiles }) => {
+        const { roomId, roomKey } = this.portal;
+        if (!roomId || !roomKey) {
+          throw new AbortError();
+        }
+        const storageBackend = await getStorageBackend();
+        return storageBackend.saveFilesToStorageBackend({
+          prefix: `${FIREBASE_STORAGE_PREFIXES.collabFiles}/${roomId}`,
+          files: await encodeFilesForUpload({
+            files: addedFiles,
+            encryptionKey: roomKey,
+            maxBytes: FILE_UPLOAD_MAX_BYTES,
+          }),
+        });
+      },
     });
     this.excalidrawAPI = props.excalidrawAPI;
     this.activeIntervalId = null;
@@ -198,17 +208,17 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
       this.getSceneElementsIncludingDeleted(),
     );
 
-    if (
-      this._isCollaborating &&
-      this.fileManager.shouldPreventUnload(syncableElements)
-      // || !isSavedToFirebase(this.portal, syncableElements))
-    ) {
-      // this won't run in time if user decides to leave the site, but
-      //  the purpose is to run in immediately after user decides to stay
-      this.saveCollabRoomToFirebase(syncableElements);
+    // if (
+    //   this._isCollaborating &&
+    //   (this.fileManager.shouldPreventUnload(syncableElements) ||
+    //     !( getStorageBackend())?.isSaved(this.portal, syncableElements))
+    // ) {
+    //   // this won't run in time if user decides to leave the site, but
+    //   //  the purpose is to run in immediately after user decides to stay
+    //   this.saveCollabRoomToFirebase(syncableElements);
 
-      preventUnload(event);
-    }
+    //   preventUnload(event);
+    // }
 
     if (this.isCollaborating() || this.portal.roomId) {
       try {
@@ -227,16 +237,8 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
     syncableElements: readonly SyncableExcalidrawElement[],
   ) => {
     try {
-      // const savedData = await saveToFirebase(
-      //   this.portal,
-      //   syncableElements,
-      //   this.excalidrawAPI.getAppState(),
-      // );
-      // if (this.isCollaborating() && savedData && savedData.reconciledElements) {
-      //   this.handleRemoteSceneUpdate(
-      //     this.reconcileElements(savedData.reconciledElements),
-      //   );
-      // }
+      const storageBackend = await getStorageBackend();
+      storageBackend.saveToStorageBackend(this.portal, syncableElements);
     } catch (error: any) {
       console.error(error);
     }
@@ -387,7 +389,27 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
       return null;
     }
 
-    if (!existingRoomLinkData) {
+    if (existingRoomLinkData) {
+      this.excalidrawAPI.resetScene();
+
+      try {
+        const storageBackend = await getStorageBackend();
+        const elements = await storageBackend.loadFromStorageBackend(
+          roomId,
+          roomKey,
+          this.portal.socket,
+        );
+        if (elements) {
+          scenePromise.resolve({
+            elements,
+            scrollToContent: true,
+          });
+        }
+      } catch (error: any) {
+        // log the error and move on. other peers will sync us the scene.
+        console.error(error);
+      }
+    } else {
       const elements = this.excalidrawAPI.getSceneElements().map((element) => {
         if (isImageElement(element) && element.status === "saved") {
           return newElementWith(element, { status: "pending" });
@@ -524,20 +546,16 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
       this.excalidrawAPI.resetScene();
 
       try {
-        // const elements = await loadFromFirebase(
-        //   roomLinkData.roomId,
-        //   roomLinkData.roomKey,
-        //   this.portal.socket,
-        // );
-        // if (elements) {
-        //   this.setLastBroadcastedOrReceivedSceneVersion(
-        //     getSceneVersion(elements),
-        //   );
-        //   return {
-        //     elements,
-        //     scrollToContent: true,
-        //   };
-        // }
+        const elements = await restoreElements(null, null);
+        if (elements) {
+          this.setLastBroadcastedOrReceivedSceneVersion(
+            getSceneVersion(elements),
+          );
+          return {
+            elements,
+            scrollToContent: true,
+          };
+        }
       } catch (error: any) {
         // log the error and move on. other peers will sync us the scene.
         console.error(error);
