@@ -87,14 +87,11 @@
   "prettier": "@excalidraw/prettier-config",
   "private": true,
   "scripts": {
-    "build-node": "node ./scripts/build-node.js",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "fix:code": "yarn test:code --fix",
     "fix:other": "yarn prettier --write",
     "fix": "yarn fix:other && yarn fix:code",
-    "locales-coverage": "node scripts/build-locales-coverage.js",
-    "locales-coverage:description": "node scripts/locales-coverage-description.js",
     "prettier": "prettier \"**/*.{css,scss,json,md,html,yml}\" --ignore-path=.eslintignore",
     "start": "react-scripts start",
     "test:all": "yarn test:typecheck && yarn test:code && yarn test:other && yarn test:app --watchAll=false",
@@ -104,7 +101,6 @@
     "test:other": "yarn prettier --list-different",
     "test:typecheck": "tsc",
     "test:update": "yarn test:app --updateSnapshot --watchAll=false",
-    "test": "yarn test:app",
-    "autorelease": "node scripts/autorelease.js"
+    "test": "yarn test:app"
   }
 }
