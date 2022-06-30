@@ -543,10 +543,10 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
     | { fetchScene: false; roomLinkData?: null }) => {
     clearTimeout(this.socketInitializationTimer!);
     if (fetchScene && roomLinkData && this.portal.socket) {
-      this.excalidrawAPI.resetScene();
+      // this.excalidrawAPI.resetScene();
 
       try {
-        const elements = await restoreElements(null, null);
+        const elements = this.excalidrawAPI.getSceneElements();
         if (elements) {
           this.setLastBroadcastedOrReceivedSceneVersion(
             getSceneVersion(elements),

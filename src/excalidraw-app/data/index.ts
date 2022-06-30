@@ -1,9 +1,4 @@
 import { compressData, decompressData } from "../../data/encode";
-import {
-  decryptData,
-  generateEncryptionKey,
-  IV_LENGTH_BYTES,
-} from "../../data/encryption";
 import { serializeAsJSON } from "../../data/json";
 import { restore } from "../../data/restore";
 import { ImportedDataState } from "../../data/types";
@@ -47,8 +42,7 @@ export const getSyncableElements = (elements: readonly ExcalidrawElement[]) =>
     isSyncableElement(element),
   ) as SyncableExcalidrawElement[];
 
-const BACKEND_V2_GET = process.env.REACT_APP_BACKEND_V2_GET_URL;
-const BACKEND_V2_POST = process.env.REACT_APP_BACKEND_V2_POST_URL;
+const REACT_APP_SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const generateRoomId = async () => {
   const buffer = new Uint8Array(ROOM_ID_BYTES);
@@ -56,13 +50,6 @@ const generateRoomId = async () => {
   return bytesToHexString(buffer);
 };
 
-/**
- * Right now the reason why we resolve connection params (url, polling...)
- * from upstream is to allow changing the params immediately when needed without
- * having to wait for clients to update the SW.
- *
- * If REACT_APP_WS_SERVER_URL env is set, we use that instead (useful for forks)
- */
 export const getCollabServer = async (): Promise<{
   url: string;
   polling: boolean;
@@ -125,16 +112,12 @@ export type SocketUpdateData =
 export const getCollaborationLinkData = (link: string) => {
   const hash = new URL(link).hash;
   const match = hash.match(/^#room=([a-zA-Z0-9_-]+),([a-zA-Z0-9_-]+)$/);
-  if (match && match[2].length !== 22) {
-    window.alert(t("alerts.invalidEncryptionKey"));
-    return null;
-  }
   return match ? { roomId: match[1], roomKey: match[2] } : null;
 };
 
 export const generateCollaborationLinkData = async () => {
   const roomId = await generateRoomId();
-  const roomKey = await generateEncryptionKey();
+  const roomKey = "";
 
   if (!roomKey) {
     throw new Error("Couldn't generate room key");
@@ -150,48 +133,12 @@ export const getCollaborationLink = (data: {
   return `${window.location.origin}${window.location.pathname}#room=${data.roomId},${data.roomKey}`;
 };
 
-/**
- * Decodes shareLink data using the legacy buffer format.
- * @deprecated
- */
-const legacy_decodeFromBackend = async ({
-  buffer,
-  decryptionKey,
-}: {
-  buffer: ArrayBuffer;
-  decryptionKey: string;
-}) => {
-  let decrypted: ArrayBuffer;
-
-  try {
-    // Buffer should contain both the IV (fixed length) and encrypted data
-    const iv = buffer.slice(0, IV_LENGTH_BYTES);
-    const encrypted = buffer.slice(IV_LENGTH_BYTES, buffer.byteLength);
-    decrypted = await decryptData(new Uint8Array(iv), encrypted, decryptionKey);
-  } catch (error: any) {
-    // Fixed IV (old format, backward compatibility)
-    const fixedIv = new Uint8Array(IV_LENGTH_BYTES);
-    decrypted = await decryptData(fixedIv, buffer, decryptionKey);
-  }
-
-  // We need to convert the decrypted array buffer to a string
-  const string = new window.TextDecoder("utf-8").decode(
-    new Uint8Array(decrypted),
-  );
-  const data: ImportedDataState = JSON.parse(string);
-
-  return {
-    elements: data.elements || null,
-    appState: data.appState || null,
-  };
-};
-
 const importFromBackend = async (
   id: string,
   decryptionKey: string,
 ): Promise<ImportedDataState> => {
   try {
-    const response = await fetch(`${BACKEND_V2_GET}${id}`);
+    const response = await fetch(`${REACT_APP_SERVER_URL}/${id}`);
 
     if (!response.ok) {
       window.alert(t("alerts.importBackendFailed"));
@@ -219,7 +166,7 @@ const importFromBackend = async (
         "error when decoding shareLink data using the new format:",
         error,
       );
-      return legacy_decodeFromBackend({ buffer, decryptionKey });
+      return {};
     }
   } catch (error: any) {
     window.alert(t("alerts.importBackendFailed"));
@@ -265,7 +212,7 @@ export const exportToBackend = async (
   appState: AppState,
   files: BinaryFiles,
 ) => {
-  const encryptionKey = await generateEncryptionKey("string");
+  const encryptionKey = "";
 
   const payload = await compressData(
     new TextEncoder().encode(
@@ -288,7 +235,7 @@ export const exportToBackend = async (
       maxBytes: FILE_UPLOAD_MAX_BYTES,
     });
 
-    const response = await fetch(BACKEND_V2_POST as string, {
+    const response = await fetch(REACT_APP_SERVER_URL as string, {
       method: "POST",
       body: payload.buffer,
     });

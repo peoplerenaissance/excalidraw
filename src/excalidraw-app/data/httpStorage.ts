@@ -1,43 +1,22 @@
 import { MIME_TYPES } from "../../constants";
-import { decompressData } from "../../data/encode";
-import {
-  IV_LENGTH_BYTES,
-  encryptData,
-  decryptData,
-} from "../../data/encryption";
 import { restoreElements } from "../../data/restore";
 import { getSceneVersion } from "../../element";
 import { ExcalidrawElement, FileId } from "../../element/types";
-import { BinaryFileData, BinaryFileMetadata, DataURL } from "../../types";
+import { BinaryFileData, DataURL } from "../../types";
 import Portal from "../collab/Portal";
 
 export const encryptElements = async (
-  key: string,
   elements: readonly ExcalidrawElement[],
-): Promise<{ ciphertext: ArrayBuffer; iv: Uint8Array }> => {
-  const json = JSON.stringify(elements);
-  const encoded = new TextEncoder().encode(json);
-  const { encryptedBuffer, iv } = await encryptData(key, encoded);
-
-  return { ciphertext: encryptedBuffer, iv };
-};
-
-export const decryptElements = async (
-  key: string,
-  iv: Uint8Array,
-  ciphertext: ArrayBuffer | Uint8Array,
-): Promise<readonly ExcalidrawElement[]> => {
-  const decrypted = await decryptData(iv, ciphertext, key);
-  const decodedData = new TextDecoder("utf-8").decode(
-    new Uint8Array(decrypted),
-  );
-  return JSON.parse(decodedData);
+): Promise<any> => {
+  return JSON.stringify(elements);
 };
 
 const httpStorageSceneVersionCache = new WeakMap<
   SocketIOClient.Socket,
   number
 >();
+
+const HTTP_STORAGE_BACKEND_URL = process.env.REACT_APP_SERVER_URL;
 
 export const isSavedToHttpStorage = (
   portal: Portal,
@@ -71,45 +50,40 @@ export const saveToHttpStorage = async (
 
   const sceneVersion = getSceneVersion(elements);
 
-  try {
-    const HTTP_STORAGE_BACKEND_URL =
-      process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
-    const getResponse = await fetch(
-      `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
-    );
-    if (!getResponse.ok && getResponse.status !== 404) {
+  const getResponse = await fetch(`${HTTP_STORAGE_BACKEND_URL}/drawing-data`, {
+    method: "POST",
+    body: new URLSearchParams({
+      roomId,
+      roomKey,
+    }),
+  });
+  if (!getResponse.ok && getResponse.status !== 404) {
+    return false;
+  }
+
+  if (getResponse.ok) {
+    const existingElements = JSON.parse((await getResponse.json()).data);
+
+    if (existingElements && getSceneVersion(existingElements) >= sceneVersion) {
       return false;
     }
+  }
 
-    // If room already exist, we compare scene versions to check
-    // if we're up to date before saving our scene
-    if (getResponse.ok) {
-      const buffer = await getResponse.arrayBuffer();
-      const existingElements = await getElementsFromBuffer(buffer, roomKey);
+  console.log("Saving to http storage");
 
-      if (getSceneVersion(existingElements) >= sceneVersion) {
-        return false;
-      }
-    }
+  const putResponse = await fetch(`${HTTP_STORAGE_BACKEND_URL}/drawing-data`, {
+    method: "POST",
+    body: new URLSearchParams({
+      roomId,
+      roomKey,
+      data: JSON.stringify(elements),
+    }),
+  });
 
-    const { ciphertext, iv } = await encryptElements(roomKey, elements);
-
-    // Concatenate IV with encrypted data (IV does not have to be secret).
-    const payloadBlob = new Blob([iv.buffer, ciphertext]);
-    const payload = await new Response(payloadBlob).arrayBuffer();
-    const putResponse = await fetch(
-      `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
-      {
-        method: "PUT",
-        body: payload,
-      },
-    );
-
-    if (putResponse.ok) {
-      httpStorageSceneVersionCache.set(socket, sceneVersion);
-      return true;
-    }
-  } catch {}
+  if (putResponse.ok) {
+    httpStorageSceneVersionCache.set(socket, sceneVersion);
+    return true;
+  }
   return false;
 };
 
@@ -118,39 +92,21 @@ export const loadFromHttpStorage = async (
   roomKey: string,
   socket: SocketIOClient.Socket | null,
 ): Promise<readonly ExcalidrawElement[] | null> => {
-  try {
-    const HTTP_STORAGE_BACKEND_URL =
-      process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
-    const getResponse = await fetch(
-      `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
-    );
+  const getResponse = await fetch(`${HTTP_STORAGE_BACKEND_URL}/drawing-data`, {
+    method: "POST",
+    body: new URLSearchParams({
+      roomId,
+      roomKey,
+    }),
+  });
 
-    const buffer = await getResponse.arrayBuffer();
-    const elements = await getElementsFromBuffer(buffer, roomKey);
+  const elements = JSON.parse((await getResponse.json()).data);
 
-    if (socket) {
-      httpStorageSceneVersionCache.set(socket!, getSceneVersion(elements));
-    }
-
-    return restoreElements(elements, null);
-  } catch {
-    return restoreElements(null, null);
+  if (socket) {
+    httpStorageSceneVersionCache.set(socket!, getSceneVersion(elements));
   }
-};
 
-const getElementsFromBuffer = async (
-  buffer: ArrayBuffer,
-  key: string,
-): Promise<readonly ExcalidrawElement[]> => {
-  // Buffer should contain both the IV (fixed length) and encrypted data
-  const iv = buffer.slice(0, IV_LENGTH_BYTES);
-  const encrypted = buffer.slice(IV_LENGTH_BYTES, buffer.byteLength);
-
-  return await decryptElements(
-    key,
-    new Uint8Array(iv),
-    new Uint8Array(encrypted),
-  );
+  return restoreElements(elements, null);
 };
 
 export const saveFilesToHttpStorage = async ({
@@ -162,9 +118,6 @@ export const saveFilesToHttpStorage = async ({
 }) => {
   const erroredFiles = new Map<FileId, true>();
   const savedFiles = new Map<FileId, true>();
-
-  const HTTP_STORAGE_BACKEND_URL =
-    process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
 
   await Promise.all(
     files.map(async ({ id, buffer }) => {
@@ -197,18 +150,11 @@ export const loadFilesFromHttpStorage = async (
   await Promise.all(
     [...new Set(filesIds)].map(async (id) => {
       try {
-        const HTTP_STORAGE_BACKEND_URL =
-          process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
         const response = await fetch(`${HTTP_STORAGE_BACKEND_URL}/files/${id}`);
         if (response.status < 400) {
           const arrayBuffer = await response.arrayBuffer();
 
-          const { data, metadata } = await decompressData<BinaryFileMetadata>(
-            new Uint8Array(arrayBuffer),
-            {
-              decryptionKey,
-            },
-          );
+          const { data, metadata } = arrayBuffer as any;
 
           const dataURL = new TextDecoder().decode(data) as DataURL;
 

@@ -11,7 +11,7 @@ module.exports = {
     "excalidraw.development": "./entry.js",
   },
   output: {
-    path: path.resolve(__dirname, outputDir),
+    path: path.resolve(outputDir),
     library: "ExcalidrawLib",
     libraryTarget: "umd",
     filename: "[name].js",
@@ -62,15 +62,15 @@ module.exports = {
     ],
   },
   optimization: {
-    splitChunks: {
-      chunks: "async",
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          name: "vendor",
-        },
-      },
-    },
+    // splitChunks: {
+    //   chunks: "async",
+    //   cacheGroups: {
+    //     vendors: {
+    //       test: /[\\/]node_modules[\\/]/,
+    //       name: "vendor",
+    //     },
+    //   },
+    // },
   },
   plugins: [
     new webpack.EvalSourceMapDevToolPlugin({ exclude: /vendor/ }),
