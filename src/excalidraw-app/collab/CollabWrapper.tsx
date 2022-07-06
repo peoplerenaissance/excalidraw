@@ -134,10 +134,13 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
           throw new AbortError();
         }
         const storageBackend = await getStorageBackend();
+        console.log("Getting files from storage", fileIds);
         return storageBackend.loadFilesFromStorageBackend(
           `files/rooms/${roomId}`,
           roomKey,
           fileIds,
+          roomId,
+          roomKey,
         );
       },
       saveFiles: async ({ addedFiles }) => {
@@ -153,6 +156,8 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
             encryptionKey: roomKey,
             maxBytes: FILE_UPLOAD_MAX_BYTES,
           }),
+          roomId,
+          roomKey,
         });
       },
     });

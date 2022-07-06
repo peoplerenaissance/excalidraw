@@ -1,8 +1,9 @@
 import { MIME_TYPES } from "../../constants";
+import { decompressData } from "../../data/encode";
 import { restoreElements } from "../../data/restore";
 import { getSceneVersion } from "../../element";
 import { ExcalidrawElement, FileId } from "../../element/types";
-import { BinaryFileData, DataURL } from "../../types";
+import { BinaryFileData, BinaryFileMetadata, DataURL } from "../../types";
 import Portal from "../collab/Portal";
 
 export const encryptElements = async (
@@ -112,9 +113,13 @@ export const loadFromHttpStorage = async (
 export const saveFilesToHttpStorage = async ({
   prefix,
   files,
+  roomId,
+  roomKey,
 }: {
   prefix: string;
   files: { id: FileId; buffer: Uint8Array }[];
+  roomId: string;
+  roomKey: string;
 }) => {
   const erroredFiles = new Map<FileId, true>();
   const savedFiles = new Map<FileId, true>();
@@ -123,10 +128,16 @@ export const saveFilesToHttpStorage = async ({
     files.map(async ({ id, buffer }) => {
       try {
         const payloadBlob = new Blob([buffer]);
-        const payload = await new Response(payloadBlob).arrayBuffer();
-        await fetch(`${HTTP_STORAGE_BACKEND_URL}/files/${id}`, {
-          method: "PUT",
-          body: payload,
+        const body = await new Response(payloadBlob).arrayBuffer();
+
+        await fetch(`${HTTP_STORAGE_BACKEND_URL}/drawing-file`, {
+          method: "POST",
+          headers: {
+            "Room-Id": roomId,
+            "Room-Key": roomKey,
+            "File-Id": id,
+          },
+          body,
         });
         savedFiles.set(id, true);
       } catch (error: any) {
@@ -142,19 +153,35 @@ export const loadFilesFromHttpStorage = async (
   prefix: string,
   decryptionKey: string,
   filesIds: readonly FileId[],
+  roomId: string,
+  roomKey: string,
 ) => {
   const loadedFiles: BinaryFileData[] = [];
   const erroredFiles = new Map<FileId, true>();
 
-  //////////////
   await Promise.all(
     [...new Set(filesIds)].map(async (id) => {
       try {
-        const response = await fetch(`${HTTP_STORAGE_BACKEND_URL}/files/${id}`);
+        const response = await fetch(
+          `${HTTP_STORAGE_BACKEND_URL}/drawing-file`,
+          {
+            method: "GET",
+            headers: {
+              "Room-Id": roomId,
+              "Room-Key": roomKey,
+              "File-Id": id,
+            },
+          },
+        );
         if (response.status < 400) {
-          const arrayBuffer = await response.arrayBuffer();
+          const buffer = await response.arrayBuffer();
 
-          const { data, metadata } = arrayBuffer as any;
+          const { data, metadata } = await decompressData<BinaryFileMetadata>(
+            new Uint8Array(buffer),
+            {
+              decryptionKey: roomKey,
+            },
+          );
 
           const dataURL = new TextDecoder().decode(data) as DataURL;
 
@@ -173,7 +200,6 @@ export const loadFilesFromHttpStorage = async (
       }
     }),
   );
-  //////
 
   return { loadedFiles, erroredFiles };
 };

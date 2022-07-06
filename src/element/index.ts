@@ -59,8 +59,13 @@ export {
 } from "./sizeHelpers";
 export { showSelectedShapeActions } from "./showSelectedShapeActions";
 
-export const getSceneVersion = (elements: readonly ExcalidrawElement[]) =>
-  elements.reduce((acc, el) => acc + el.version, 0);
+export const getSceneVersion = (elements: readonly ExcalidrawElement[]) => {
+  try {
+    return elements.reduce((acc, el) => acc + el.version, 0);
+  } catch {
+    return 0;
+  }
+};
 
 export const getVisibleElements = (elements: readonly ExcalidrawElement[]) =>
   elements.filter(

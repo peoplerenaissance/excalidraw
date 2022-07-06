@@ -16,12 +16,16 @@ export interface StorageBackend {
   saveFilesToStorageBackend: ({
     prefix,
     files,
+    roomId,
+    roomKey,
   }: {
     prefix: string;
     files: {
       id: FileId;
       buffer: Uint8Array;
     }[];
+    roomId: string;
+    roomKey: string;
   }) => Promise<{
     savedFiles: Map<FileId, true>;
     erroredFiles: Map<FileId, true>;
@@ -30,6 +34,8 @@ export interface StorageBackend {
     prefix: string,
     decryptionKey: string,
     filesIds: readonly FileId[],
+    roomId: string,
+    roomKey: string,
   ) => Promise<{
     loadedFiles: BinaryFileData[];
     erroredFiles: Map<FileId, true>;

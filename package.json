@@ -126,6 +126,7 @@
     "pepjs": "0.5.3",
     "prettier": "2.6.2",
     "rewire": "5.0.0",
+    "serve": "13.0.2",
     "webpack-cli": "4.10.0"
   },
   "resolutions": {

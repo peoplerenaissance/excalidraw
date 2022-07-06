@@ -247,11 +247,11 @@ export const exportToBackend = async (
       url.hash = `json=${json.id},${encryptionKey}`;
       const urlString = url.toString();
 
-      const storageBackend = await getStorageBackend();
-      await storageBackend.saveFilesToStorageBackend({
-        prefix: `/files/shareLinks/${json.id}`,
-        files: filesToUpload,
-      });
+      // const storageBackend = await getStorageBackend();
+      // await storageBackend.saveFilesToStorageBackend({
+      //   prefix: `/files/shareLinks/${json.id}`,
+      //   files: filesToUpload,
+      // });
 
       window.prompt(`🔒${t("alerts.uploadedSecurly")}`, urlString);
     } else if (json.error_class === "RequestTooLargeError") {

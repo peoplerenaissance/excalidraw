@@ -264,6 +264,8 @@ const ExcalidrawWrapper = () => {
                 `${FIREBASE_STORAGE_PREFIXES.shareLinkFiles}/${data.id}`,
                 data.key,
                 fileIds,
+                data.id,
+                data.key,
               );
             })
             .then(({ loadedFiles, erroredFiles }) => {
