@@ -7,7 +7,7 @@ import {
 } from "./httpStorage";
 import { StorageBackend } from "./StorageBackend";
 
-const httpStorage: StorageBackend = {
+export const httpStorage: StorageBackend = {
   isSaved: isSavedToHttpStorage,
   saveToStorageBackend: saveToHttpStorage,
   loadFromStorageBackend: loadFromHttpStorage,
