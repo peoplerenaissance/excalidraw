@@ -295,6 +295,7 @@ export interface ExcalidrawProps {
   UIOptions?: {
     dockedSidebarBreakpoint?: number;
     canvasActions?: CanvasActions;
+    mode?: string;
   };
   detectScroll?: boolean;
   handleKeyboardGlobally?: boolean;
@@ -359,6 +360,7 @@ export type AppProps = Merge<
     UIOptions: {
       canvasActions: Required<CanvasActions> & { export: ExportOpts };
       dockedSidebarBreakpoint?: number;
+      mode?: string;
     };
     detectScroll: boolean;
     handleKeyboardGlobally: boolean;

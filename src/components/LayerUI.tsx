@@ -292,10 +292,9 @@ const LayerUI = ({
   ) : null;
 
   const renderFixedSideContainer = () => {
-    const shouldRenderSelectedShapeActions = showSelectedShapeActions(
-      appState,
-      elements,
-    );
+    const shouldRenderSelectedShapeActions =
+      showSelectedShapeActions(appState, elements) &&
+      UIOptions.mode !== "minimal";
 
     return (
       <FixedSideContainer side="top">
@@ -304,10 +303,15 @@ const LayerUI = ({
             gap={4}
             className={clsx({ "disable-pointerEvents": zenModeEnabled })}
           >
-            {viewModeEnabled
-              ? renderViewModeCanvasActions()
-              : renderCanvasActions()}
-            {shouldRenderSelectedShapeActions && renderSelectedShapeActions()}
+            {UIOptions.mode !== "minimal" && (
+              <>
+                {viewModeEnabled
+                  ? renderViewModeCanvasActions()
+                  : renderCanvasActions()}
+                {shouldRenderSelectedShapeActions &&
+                  renderSelectedShapeActions()}
+              </>
+            )}
           </Stack.Col>
           {!viewModeEnabled && (
             <Section heading="shapes">

@@ -101,7 +101,13 @@ const initializeScene = async (opts: {
     scrollToContent?: boolean;
   } = await loadScene(null, null, localDataState);
 
+  let name = searchParams.get("name");
+  let uiMode = searchParams.get("mode");
+  let viewport = searchParams.get("viewport");
   let roomLinkData = getCollaborationLinkData(window.location.href);
+
+  console.log("Initializing with", roomLinkData, name, uiMode, viewport);
+
   const isExternalScene = !!(id || jsonBackendMatch || roomLinkData);
   if (isExternalScene) {
     if (
@@ -166,6 +172,7 @@ const initializeScene = async (opts: {
   }
 
   if (roomLinkData) {
+    opts.collabAPI.setUsername(name || "");
     return {
       scene: await opts.collabAPI.initializeSocketClient(roomLinkData),
       isExternalScene: true,
@@ -511,20 +518,6 @@ const ExcalidrawWrapper = () => {
 
   const renderFooter = useCallback(
     (isMobile: boolean) => {
-      const renderEncryptedIcon = () => (
-        <a
-          className="encrypted-icon tooltip"
-          href="https://blog.excalidraw.com/end-to-end-encryption/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={t("encrypted.link")}
-        >
-          <Tooltip label={t("encrypted.tooltip")} long={true}>
-            {shield}
-          </Tooltip>
-        </a>
-      );
-
       const renderLanguageList = () => (
         <LanguageList
           onChange={(langCode) => setLangCode(langCode)}
@@ -564,12 +557,7 @@ const ExcalidrawWrapper = () => {
           </div>
         );
       }
-      return (
-        <>
-          {renderEncryptedIcon()}
-          {renderLanguageList()}
-        </>
-      );
+      return <>{/* {renderLanguageList()} */}</>;
     },
     [langCode],
   );
@@ -595,6 +583,9 @@ const ExcalidrawWrapper = () => {
     LocalData.fileStorage.reset();
   }, []);
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const uiMode = searchParams.get("mode");
+
   return (
     <div
       style={{ height: "100%" }}
@@ -615,6 +606,7 @@ const ExcalidrawWrapper = () => {
               onExportToBackend,
             },
           },
+          mode: uiMode || "",
         }}
         renderFooter={renderFooter}
         langCode={langCode}
