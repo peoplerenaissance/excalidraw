@@ -411,8 +411,10 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
           });
         }
       } catch (error: any) {
-        // log the error and move on. other peers will sync us the scene.
-        console.error(error);
+        console.error("Failed to load room", roomId, roomKey, error);
+        this.setState({
+          errorMessage: `Could not load room ${roomId}. Drawing will not be saved.`,
+        });
       }
     } else {
       const elements = this.excalidrawAPI.getSceneElements().map((element) => {
