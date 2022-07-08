@@ -363,10 +363,12 @@ const LayerUI = ({
                         />
                       </Stack.Row>
                     </Island>
-                    <LibraryButton
-                      appState={appState}
-                      setAppState={setAppState}
-                    />
+                    {UIOptions.mode !== "minimal" && (
+                      <LibraryButton
+                        appState={appState}
+                        setAppState={setAppState}
+                      />
+                    )}
                   </Stack.Row>
                 </Stack.Col>
               )}
