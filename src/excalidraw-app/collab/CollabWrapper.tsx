@@ -213,17 +213,18 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
       this.getSceneElementsIncludingDeleted(),
     );
 
-    if (
-      this._isCollaborating &&
-      (this.fileManager.shouldPreventUnload(syncableElements) ||
-        !httpStorage.isSaved(this.portal, syncableElements))
-    ) {
-      // this won't run in time if user decides to leave the site, but
-      //  the purpose is to run in immediately after user decides to stay
-      this.saveCollabRoomToFirebase(syncableElements);
+    // if (
+    //   this._isCollaborating
+    //   // this._isCollaborating &&
+    //   // (this.fileManager.shouldPreventUnload(syncableElements) ||
+    //   //   !httpStorage.isSaved(this.portal, syncableElements))
+    // ) {
+    //   // this won't run in time if user decides to leave the site, but
+    //   //  the purpose is to run in immediately after user decides to stay
+    //   this.saveCollabRoomToFirebase(syncableElements);
 
-      preventUnload(event);
-    }
+    //   // preventUnload(event);
+    // }
 
     if (this.isCollaborating() || this.portal.roomId) {
       try {
