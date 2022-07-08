@@ -302,12 +302,13 @@ const LayerUI = ({
           <Stack.Col
             gap={4}
             className={clsx({ "disable-pointerEvents": zenModeEnabled })}
+            style={{ width: "200px" }}
           >
             {UIOptions.mode !== "minimal" && (
               <>
-                {viewModeEnabled
+                {/* {viewModeEnabled
                   ? renderViewModeCanvasActions()
-                  : renderCanvasActions()}
+                  : renderCanvasActions()} */}
                 {shouldRenderSelectedShapeActions &&
                   renderSelectedShapeActions()}
               </>
@@ -330,12 +331,12 @@ const LayerUI = ({
                       title={t("toolBar.penMode")}
                       penDetected={appState.penDetected}
                     />
-                    <LockButton
+                    {/* <LockButton
                       zenModeEnabled={zenModeEnabled}
                       checked={appState.activeTool.locked}
                       onChange={() => onLockToggle()}
                       title={t("toolBar.lock")}
-                    />
+                    /> */}
                     <Island
                       padding={1}
                       className={clsx("App-toolbar", {
@@ -379,10 +380,10 @@ const LayerUI = ({
               },
             )}
           >
-            <UserList
+            {/* <UserList
               collaborators={appState.collaborators}
               actionManager={actionManager}
-            />
+            /> */}
             {renderTopRightUI?.(device.isMobile, appState)}
           </div>
         </div>
@@ -460,7 +461,7 @@ const LayerUI = ({
         >
           {renderCustomFooter?.(false, appState)}
         </div>
-        <div
+        {/* <div
           className={clsx(
             "layer-ui__wrapper__footer-right zen-mode-transition",
             {
@@ -477,7 +478,7 @@ const LayerUI = ({
           onClick={toggleZenMode}
         >
           {t("buttons.exitZenMode")}
-        </button>
+        </button> */}
       </footer>
     );
   };
