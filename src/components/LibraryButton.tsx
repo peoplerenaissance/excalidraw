@@ -21,7 +21,7 @@ export const LibraryButton: React.FC<{
   isMobile?: boolean;
 }> = ({ appState, setAppState, isMobile }) => {
   const device = useDevice();
-  return null;
+  // return null;
   return (
     <label
       className={clsx(
