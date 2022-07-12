@@ -302,7 +302,7 @@ const LayerUI = ({
           <Stack.Col
             gap={4}
             className={clsx({ "disable-pointerEvents": zenModeEnabled })}
-            style={{ width: "200px" }}
+            style={UIOptions.mode === "minimal" ? {} : { width: "200px" }}
           >
             {UIOptions.mode !== "minimal" && (
               <>

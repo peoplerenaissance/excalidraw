@@ -90,17 +90,17 @@ export const MobileMenu = ({
                   </Stack.Row>
                 </Island>
                 {renderTopRightUI && renderTopRightUI(true, appState)}
-                <LockButton
+                {/* <LockButton
                   checked={appState.activeTool.locked}
                   onChange={onLockToggle}
                   title={t("toolBar.lock")}
                   isMobile
-                />
-                <LibraryButton
+                /> */}
+                {/* <LibraryButton
                   appState={appState}
                   setAppState={setAppState}
                   isMobile
-                />
+                /> */}
                 <PenModeButton
                   checked={appState.penMode}
                   onChange={onPenModeToggle}
@@ -135,7 +135,7 @@ export const MobileMenu = ({
 
     return (
       <div className="App-toolbar-content">
-        {actionManager.renderAction("toggleCanvasMenu")}
+        {/* {actionManager.renderAction("toggleCanvasMenu")} */}
         {actionManager.renderAction("toggleEditMenu")}
 
         {actionManager.renderAction("undo")}
