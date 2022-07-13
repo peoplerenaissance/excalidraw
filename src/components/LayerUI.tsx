@@ -292,9 +292,10 @@ const LayerUI = ({
   ) : null;
 
   const renderFixedSideContainer = () => {
-    const shouldRenderSelectedShapeActions =
-      showSelectedShapeActions(appState, elements) &&
-      UIOptions.mode !== "minimal";
+    const shouldRenderSelectedShapeActions = showSelectedShapeActions(
+      appState,
+      elements,
+    );
 
     return (
       <FixedSideContainer side="top">
@@ -302,9 +303,13 @@ const LayerUI = ({
           <Stack.Col
             gap={4}
             className={clsx({ "disable-pointerEvents": zenModeEnabled })}
-            style={UIOptions.mode === "minimal" ? {} : { width: "200px" }}
+            style={
+              UIOptions.mode === "minimal" || UIOptions.mode === "none"
+                ? {}
+                : { width: "200px" }
+            }
           >
-            {UIOptions.mode !== "minimal" && (
+            {UIOptions.mode !== "minimal" && UIOptions.mode !== "none" && (
               <>
                 {/* {viewModeEnabled
                   ? renderViewModeCanvasActions()
@@ -314,7 +319,7 @@ const LayerUI = ({
               </>
             )}
           </Stack.Col>
-          {!viewModeEnabled && (
+          {!viewModeEnabled && UIOptions.mode !== "none" && (
             <Section heading="shapes">
               {(heading) => (
                 <Stack.Col gap={4} align="start">
@@ -343,11 +348,11 @@ const LayerUI = ({
                         "zen-mode": zenModeEnabled,
                       })}
                     >
-                      <HintViewer
+                      {/* <HintViewer
                         appState={appState}
                         elements={elements}
                         isMobile={device.isMobile}
-                      />
+                      /> */}
                       {heading}
                       <Stack.Row gap={1}>
                         <ShapesSwitcher
@@ -363,12 +368,13 @@ const LayerUI = ({
                         />
                       </Stack.Row>
                     </Island>
-                    {UIOptions.mode !== "minimal" && (
-                      <LibraryButton
-                        appState={appState}
-                        setAppState={setAppState}
-                      />
-                    )}
+                    {UIOptions.mode !== "minimal" &&
+                      UIOptions.mode !== "none" && (
+                        <LibraryButton
+                          appState={appState}
+                          setAppState={setAppState}
+                        />
+                      )}
                   </Stack.Row>
                 </Stack.Col>
               )}
@@ -426,15 +432,16 @@ const LayerUI = ({
                     {actionManager.renderAction("undo", { size: "small" })}
                     {actionManager.renderAction("redo", { size: "small" })}
                   </div>
-
-                  <div
-                    className={clsx("eraser-buttons zen-mode-transition", {
-                      "layer-ui__wrapper__footer-left--transition-left":
-                        zenModeEnabled,
-                    })}
-                  >
-                    {actionManager.renderAction("eraser", { size: "small" })}
-                  </div>
+                  {UIOptions.mode !== "none" && (
+                    <div
+                      className={clsx("eraser-buttons zen-mode-transition", {
+                        "layer-ui__wrapper__footer-left--transition-left":
+                          zenModeEnabled,
+                      })}
+                    >
+                      {actionManager.renderAction("eraser", { size: "small" })}
+                    </div>
+                  )}
                 </>
               )}
               {!viewModeEnabled &&

@@ -1743,11 +1743,11 @@ class App extends React.Component<AppProps, AppState> {
         return;
       }
 
-      if (event.key === KEYS.QUESTION_MARK) {
-        this.setState({
-          showHelpDialog: true,
-        });
-      }
+      // if (event.key === KEYS.QUESTION_MARK) {
+      //   this.setState({
+      //     showHelpDialog: true,
+      //   });
+      // }
 
       if (this.actionManager.handleKeyDown(event)) {
         return;
@@ -1761,18 +1761,24 @@ class App extends React.Component<AppProps, AppState> {
         this.setState({ isBindingEnabled: false });
       }
 
-      if (event.code === CODES.ZERO) {
-        const nextState = !this.state.isLibraryOpen;
-        this.setState({ isLibraryOpen: nextState });
-        // track only openings
-        if (nextState) {
-          trackEvent(
-            "library",
-            "toggleLibrary (open)",
-            `keyboard (${this.device.isMobile ? "mobile" : "desktop"})`,
-          );
-        }
-      }
+      // if (event.code === CODES.ZERO) {
+      //   const nextState = !this.state.isLibraryOpen;
+      //   this.setState({ isLibraryOpen: nextState });
+      //   // track only openings
+      //   if (nextState) {
+      //     trackEvent(
+      //       "library",
+      //       "toggleLibrary (open)",
+      //       `keyboard (${this.device.isMobile ? "mobile" : "desktop"})`,
+      //     );
+      //   }
+      // }
+
+      const selectedTextElements = getSelectedElements(
+        this.scene.getNonDeletedElements(),
+        this.state,
+        false,
+      );
 
       if (isArrowKey(event.key)) {
         const step =
@@ -1817,63 +1823,60 @@ class App extends React.Component<AppProps, AppState> {
         this.maybeSuggestBindingForAll(selectedElements);
 
         event.preventDefault();
-      } else if (event.key === KEYS.ENTER) {
-        const selectedElements = getSelectedElements(
-          this.scene.getNonDeletedElements(),
-          this.state,
-        );
-
+      } else if (
+        event.key === KEYS.ENTER &&
+        selectedTextElements.length === 1 &&
+        isLinearElement(selectedTextElements[0])
+      ) {
         if (
-          selectedElements.length === 1 &&
-          isLinearElement(selectedElements[0])
+          !this.state.editingLinearElement ||
+          this.state.editingLinearElement.elementId !==
+            selectedTextElements[0].id
         ) {
-          if (
-            !this.state.editingLinearElement ||
-            this.state.editingLinearElement.elementId !== selectedElements[0].id
-          ) {
-            this.history.resumeRecording();
-            this.setState({
-              editingLinearElement: new LinearElementEditor(
-                selectedElements[0],
-                this.scene,
-              ),
-            });
-          }
-        } else if (
-          selectedElements.length === 1 &&
-          !isLinearElement(selectedElements[0])
-        ) {
-          const selectedElement = selectedElements[0];
-
-          this.startTextEditing({
-            sceneX: selectedElement.x + selectedElement.width / 2,
-            sceneY: selectedElement.y + selectedElement.height / 2,
-            shouldBind: true,
+          this.history.resumeRecording();
+          this.setState({
+            editingLinearElement: new LinearElementEditor(
+              selectedTextElements[0],
+              this.scene,
+            ),
           });
-          event.preventDefault();
-          return;
         }
       } else if (
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.metaKey &&
-        this.state.draggingElement === null
+        selectedTextElements.length === 1 &&
+        !isLinearElement(selectedTextElements[0]) &&
+        (/^[a-zA-Z0-9-_ ]$/.test(event.key) || event.key === KEYS.ENTER)
       ) {
-        const shape = findShapeByKey(event.key);
-        if (shape) {
-          if (this.state.activeTool.type !== shape) {
-            trackEvent(
-              "toolbar",
-              shape,
-              `keyboard (${this.device.isMobile ? "mobile" : "desktop"})`,
-            );
-          }
-          this.setActiveTool({ type: shape });
-          event.stopPropagation();
-        } else if (event.key === KEYS.Q) {
-          this.toggleLock("keyboard");
-          event.stopPropagation();
-        }
+        const selectedElement = selectedTextElements[0];
+
+        this.startTextEditing({
+          sceneX: selectedElement.x + selectedElement.width / 2,
+          sceneY: selectedElement.y + selectedElement.height / 2,
+          shouldBind: true,
+          char: event.key === KEYS.ENTER ? undefined : event.key,
+        });
+        event.preventDefault();
+        return;
+        // }
+        // } else if (
+        //   !event.ctrlKey &&
+        //   !event.altKey &&
+        //   !event.metaKey &&
+        //   this.state.draggingElement === null
+        // ) {
+        //   const shape = findShapeByKey(event.key);
+        //   if (shape) {
+        //     if (this.state.activeTool.type !== shape) {
+        //       trackEvent(
+        //         "toolbar",
+        //         shape,
+        //         `keyboard (${this.device.isMobile ? "mobile" : "desktop"})`,
+        //       );
+        //     }
+        //     this.setActiveTool({ type: shape });
+        //     event.stopPropagation();
+        // } else if (event.key === KEYS.Q) {
+        //   this.toggleLock("keyboard");
+        //   event.stopPropagation();
       }
       if (event.key === KEYS.SPACE && gesture.pointers.size === 0) {
         isHoldingSpace = true;
@@ -1881,35 +1884,35 @@ class App extends React.Component<AppProps, AppState> {
         event.preventDefault();
       }
 
-      if (
-        (event.key === KEYS.G || event.key === KEYS.S) &&
-        !event.altKey &&
-        !event[KEYS.CTRL_OR_CMD]
-      ) {
-        const selectedElements = getSelectedElements(
-          this.scene.getNonDeletedElements(),
-          this.state,
-        );
-        if (
-          this.state.activeTool.type === "selection" &&
-          !selectedElements.length
-        ) {
-          return;
-        }
+      // if (
+      //   (event.key === KEYS.G || event.key === KEYS.S) &&
+      //   !event.altKey &&
+      //   !event[KEYS.CTRL_OR_CMD]
+      // ) {
+      //   const selectedElements = getSelectedElements(
+      //     this.scene.getNonDeletedElements(),
+      //     this.state,
+      //   );
+      //   if (
+      //     this.state.activeTool.type === "selection" &&
+      //     !selectedElements.length
+      //   ) {
+      //     return;
+      //   }
 
-        if (
-          event.key === KEYS.G &&
-          (hasBackground(this.state.activeTool.type) ||
-            selectedElements.some((element) => hasBackground(element.type)))
-        ) {
-          this.setState({ openPopup: "backgroundColorPicker" });
-          event.stopPropagation();
-        }
-        if (event.key === KEYS.S) {
-          this.setState({ openPopup: "strokeColorPicker" });
-          event.stopPropagation();
-        }
-      }
+      //   if (
+      //     event.key === KEYS.G &&
+      //     (hasBackground(this.state.activeTool.type) ||
+      //       selectedElements.some((element) => hasBackground(element.type)))
+      //   ) {
+      //     this.setState({ openPopup: "backgroundColorPicker" });
+      //     event.stopPropagation();
+      //   }
+      //   if (event.key === KEYS.S) {
+      //     this.setState({ openPopup: "strokeColorPicker" });
+      //     event.stopPropagation();
+      //   }
+      // }
     },
   );
 
@@ -2060,6 +2063,7 @@ class App extends React.Component<AppProps, AppState> {
     }: {
       isExistingElement?: boolean;
     },
+    char?: string,
   ) {
     const updateElement = (
       text: string,
@@ -2146,7 +2150,11 @@ class App extends React.Component<AppProps, AppState> {
 
     // do an initial update to re-initialize element position since we were
     // modifying element's x/y for sake of editor (case: syncing to remote)
-    updateElement(element.text, element.originalText, false);
+    if (char !== undefined) {
+      updateElement(char, char, false);
+    } else {
+      updateElement(element.text, element.originalText, false);
+    }
   }
 
   private deselectElements() {
@@ -2243,6 +2251,7 @@ class App extends React.Component<AppProps, AppState> {
     sceneY,
     shouldBind,
     insertAtParentCenter = true,
+    char,
   }: {
     /** X position to insert text at */
     sceneX: number;
@@ -2251,7 +2260,10 @@ class App extends React.Component<AppProps, AppState> {
     shouldBind: boolean;
     /** whether to attempt to insert at element center if applicable */
     insertAtParentCenter?: boolean;
+    char?: string;
   }) => {
+    console.log("startTextEditing", char);
+
     let parentCenterPosition =
       insertAtParentCenter &&
       this.getTextWysiwygSnappedToCenterPosition(
@@ -2376,9 +2388,13 @@ class App extends React.Component<AppProps, AppState> {
       editingElement: element,
     });
 
-    this.handleTextWysiwyg(element, {
-      isExistingElement: !!existingTextElement,
-    });
+    this.handleTextWysiwyg(
+      element,
+      {
+        isExistingElement: !!existingTextElement,
+      },
+      char,
+    );
   };
 
   private handleCanvasDoubleClick = (
@@ -3423,6 +3439,7 @@ class App extends React.Component<AppProps, AppState> {
     if (this.state.activeTool.type === "selection") {
       const elements = this.scene.getNonDeletedElements();
       const selectedElements = getSelectedElements(elements, this.state);
+
       if (selectedElements.length === 1 && !this.state.editingLinearElement) {
         const elementWithTransformHandleType =
           getElementWithTransformHandleType(
