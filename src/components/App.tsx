@@ -1844,7 +1844,9 @@ class App extends React.Component<AppProps, AppState> {
       } else if (
         selectedTextElements.length === 1 &&
         !isLinearElement(selectedTextElements[0]) &&
-        (/^[a-zA-Z0-9-_ ]$/.test(event.key) || event.key === KEYS.ENTER)
+        (/^[a-zA-Z0-9-_ ]$/.test(event.key) ||
+          event.key === KEYS.ENTER ||
+          event.key === KEYS.BACKSPACE)
       ) {
         const selectedElement = selectedTextElements[0];
 
@@ -1852,7 +1854,10 @@ class App extends React.Component<AppProps, AppState> {
           sceneX: selectedElement.x + selectedElement.width / 2,
           sceneY: selectedElement.y + selectedElement.height / 2,
           shouldBind: true,
-          char: event.key === KEYS.ENTER ? undefined : event.key,
+          char:
+            event.key === KEYS.ENTER || event.key === KEYS.BACKSPACE
+              ? undefined
+              : event.key,
         });
         event.preventDefault();
         return;
