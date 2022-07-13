@@ -160,17 +160,52 @@ const getAdjustedDimensions = (
   width: number;
   height: number;
   baseline: number;
+  fontSize: number;
 } => {
   let maxWidth = null;
   const container = getContainerElement(element);
   if (container) {
     maxWidth = container.width - BOUND_TEXT_PADDING * 2;
   }
-  const {
+  let fontSize = element.fontSize;
+  let {
     width: nextWidth,
     height: nextHeight,
     baseline: nextBaseline,
   } = measureText(nextText, getFontString(element), maxWidth);
+
+  if (container) {
+    while (nextHeight > container.height - BOUND_TEXT_PADDING * 2) {
+      fontSize -= 1;
+      ({
+        width: nextWidth,
+        height: nextHeight,
+        baseline: nextBaseline,
+      } = measureText(
+        nextText,
+        getFontString({ fontSize, fontFamily: element.fontFamily }),
+        maxWidth,
+      ));
+    }
+
+    while (
+      nextHeight < container.height - BOUND_TEXT_PADDING * 2 - fontSize * 2 &&
+      fontSize < 20
+    ) {
+      fontSize += 1;
+      console.log(fontSize);
+      ({
+        width: nextWidth,
+        height: nextHeight,
+        baseline: nextBaseline,
+      } = measureText(
+        nextText,
+        getFontString({ fontSize, fontFamily: element.fontFamily }),
+        maxWidth,
+      ));
+    }
+  }
+
   const { textAlign, verticalAlign } = element;
   let x: number;
   let y: number;
@@ -220,27 +255,13 @@ const getAdjustedDimensions = (
     );
   }
 
-  // make sure container dimensions are set properly when
-  // text editor overflows beyond viewport dimensions
-  if (container) {
-    let height = container.height;
-    let width = container.width;
-    if (nextHeight > height - BOUND_TEXT_PADDING * 2) {
-      height = nextHeight + BOUND_TEXT_PADDING * 2;
-    }
-    if (nextWidth > width - BOUND_TEXT_PADDING * 2) {
-      width = nextWidth + BOUND_TEXT_PADDING * 2;
-    }
-    if (height !== container.height || width !== container.width) {
-      mutateElement(container, { height, width });
-    }
-  }
   return {
     width: nextWidth,
     height: nextHeight,
     x: Number.isFinite(x) ? x : element.x,
     y: Number.isFinite(y) ? y : element.y,
     baseline: nextBaseline,
+    fontSize: fontSize,
   };
 };
 
