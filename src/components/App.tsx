@@ -2267,8 +2267,6 @@ class App extends React.Component<AppProps, AppState> {
     insertAtParentCenter?: boolean;
     char?: string;
   }) => {
-    console.log("startTextEditing", char);
-
     let parentCenterPosition =
       insertAtParentCenter &&
       this.getTextWysiwygSnappedToCenterPosition(

@@ -58,6 +58,7 @@ export const saveToHttpStorage = async (
       roomKey,
     }),
   });
+  console.log("Fetching drawing data");
   if (!getResponse.ok && getResponse.status !== 404) {
     return false;
   }
