@@ -780,6 +780,7 @@ class App extends React.Component<AppProps, AppState> {
             offsetLeft: this.state.offsetLeft,
           },
           null,
+          this.props.UIOptions.mode,
         ),
       };
     }
@@ -1613,6 +1614,7 @@ class App extends React.Component<AppProps, AppState> {
         Array.isArray(target) ? target : [target],
         this.state,
         this.canvas,
+        this.props.UIOptions.mode,
       ),
     });
   };

@@ -591,7 +591,12 @@ const LayerUI = ({
             className="scroll-back-to-content"
             onClick={() => {
               setAppState({
-                ...calculateScrollCenter(elements, appState, canvas),
+                ...calculateScrollCenter(
+                  elements,
+                  appState,
+                  canvas,
+                  UIOptions.mode,
+                ),
               });
             }}
           >
