@@ -28,10 +28,12 @@ export type SyncableExcalidrawElement = ExcalidrawElement & {
 export const isSyncableElement = (
   element: ExcalidrawElement,
 ): element is SyncableExcalidrawElement => {
+  return true;
   if (element.isDeleted) {
     if (element.updated > Date.now() - DELETED_ELEMENT_TIMEOUT) {
       return true;
     }
+    console.log("Filtering deleted element", element);
     return false;
   }
   return !isInvisiblySmallElement(element);

@@ -1,9 +1,5 @@
 # Codespaces
 
-Setup
-
-    touch .env
-
 Development
 
     make dev
@@ -15,5 +11,3 @@ Build
     make dev
     yarn
     yarn build
-
-Forward port 3000.

@@ -58,7 +58,9 @@ export const saveToHttpStorage = async (
       roomKey,
     }),
   });
+
   console.log("Fetching drawing data");
+
   if (!getResponse.ok && getResponse.status !== 404) {
     return false;
   }
@@ -67,6 +69,11 @@ export const saveToHttpStorage = async (
     const existingElements = JSON.parse((await getResponse.json()).data);
 
     if (existingElements && getSceneVersion(existingElements) >= sceneVersion) {
+      console.log(
+        "Scene is already saved",
+        sceneVersion,
+        getSceneVersion(existingElements),
+      );
       return false;
     }
   }
@@ -103,6 +110,7 @@ export const loadFromHttpStorage = async (
   });
 
   const elements = JSON.parse((await getResponse.json()).data);
+  console.log("Loaded scene version", getSceneVersion(elements));
 
   if (socket) {
     httpStorageSceneVersionCache.set(socket!, getSceneVersion(elements));
