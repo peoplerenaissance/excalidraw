@@ -1,3 +1,4 @@
+import { getSyncableElements } from ".";
 import { MIME_TYPES } from "../../constants";
 import { decompressData } from "../../data/encode";
 import { restoreElements } from "../../data/restore";
@@ -33,6 +34,10 @@ export const isSavedToHttpStorage = (
   return true;
 };
 
+const getSyncableElementsFromResponse = async (response: Response) => {
+  return getSyncableElements(JSON.parse((await response.json()).data));
+};
+
 export const saveToHttpStorage = async (
   portal: Portal,
   elements: readonly ExcalidrawElement[],
@@ -66,7 +71,7 @@ export const saveToHttpStorage = async (
   }
 
   if (getResponse.ok) {
-    const existingElements = JSON.parse((await getResponse.json()).data);
+    const existingElements = await getSyncableElementsFromResponse(getResponse);
 
     if (existingElements && getSceneVersion(existingElements) >= sceneVersion) {
       console.log(
@@ -109,7 +114,8 @@ export const loadFromHttpStorage = async (
     }),
   });
 
-  const elements = JSON.parse((await getResponse.json()).data);
+  const elements = await getSyncableElementsFromResponse(getResponse);
+
   console.log("Loaded scene version", getSceneVersion(elements));
 
   if (socket) {
