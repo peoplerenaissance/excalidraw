@@ -35,7 +35,7 @@ export const isSavedToHttpStorage = (
 };
 
 const getSyncableElementsFromResponse = async (response: Response) => {
-  return getSyncableElements(JSON.parse((await response.json()).data));
+  return getSyncableElements(JSON.parse((await response.json()).data) || []);
 };
 
 export const saveToHttpStorage = async (
