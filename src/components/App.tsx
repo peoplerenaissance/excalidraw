@@ -800,9 +800,9 @@ class App extends React.Component<AppProps, AppState> {
         : MQ_RIGHT_SIDEBAR_MIN_WIDTH;
     this.device = updateObject(this.device, {
       isSmScreen: width < MQ_SM_MAX_WIDTH,
-      isMobile:
-        width < MQ_MAX_WIDTH_PORTRAIT ||
-        (height < MQ_MAX_HEIGHT_LANDSCAPE && width < MQ_MAX_WIDTH_LANDSCAPE),
+      isMobile: false, 
+        // width < MQ_MAX_WIDTH_PORTRAIT ||
+        // (height < MQ_MAX_HEIGHT_LANDSCAPE && width < MQ_MAX_WIDTH_LANDSCAPE),
       canDeviceFitSidebar: width > sidebarBreakpoint,
     });
   };
