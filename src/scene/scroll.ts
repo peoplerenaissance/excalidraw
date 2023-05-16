@@ -45,7 +45,7 @@ const isOutsideViewPort = (
   );
   return (
     viewportX2 - viewportX1 + buffer > appState.width ||
-    viewportY2 - viewportY1 > appState.height
+    viewportY2 - viewportY1 + buffer > appState.height
   );
 };
 
