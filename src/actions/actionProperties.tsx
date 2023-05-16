@@ -661,7 +661,7 @@ export const actionChangeFontFamily = register({
         icon: <FontFamilyHandDrawnIcon theme={appState.theme} />,
       },
       {
-        value: FONT_FAMILY.Helvetica,
+        value: FONT_FAMILY.ProximaNova,
         text: t("labels.normal"),
         icon: <FontFamilyNormalIcon theme={appState.theme} />,
       },
