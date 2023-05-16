@@ -40,6 +40,7 @@
 
     .ToolIcon__library {
       margin-inline-start: var(--space-factor);
+      display: none;
     }
 
     &.zen-mode {
