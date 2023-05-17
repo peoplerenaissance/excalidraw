@@ -141,6 +141,10 @@ export const exportToSvg = async (
         font-family: "Cascadia";
         src: url("${assetPath}Cascadia.woff2");
       }
+      @font-face {
+        font-family: "ProximaNovaRegular";
+        src: url("${assetPath}ProximaNovaRegular/font.woff2");
+      }
     </style>
   </defs>
   `;
