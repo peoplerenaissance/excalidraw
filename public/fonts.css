@@ -18,3 +18,9 @@
   src: url('ProximaNovaRegular/font.woff2') format('woff2'), url('ProximaNovaRegular/font.woff') format('woff');
   font-display: swap;
 }
+
+@font-face {
+  font-family: "ComicNeue";
+  src: url('ComicNeue/ComicNeue-Regular.woff2') format('woff2'), url('ComicNeue/ComicNeue-Regular.woff') format('woff');
+  font-display: swap;
+}

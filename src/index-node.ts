@@ -49,7 +49,7 @@ const elements = [
     opacity: 100,
     seed: 1683771448,
     text: "test",
-    font: "20px Virgil",
+    font: "20px ComicNeue",
     baseline: 22,
   },
 ];
@@ -57,6 +57,7 @@ const elements = [
 registerFont("./public/Virgil.woff2", { family: "Virgil" });
 registerFont("./public/Cascadia.woff2", { family: "Cascadia" });
 registerFont("./public/ProximaNovaRegular/font.woff2", { family: "ProximaNovaRegular" });
+registerFont("./public/ComicNeue/ComicNeue-Regular.woff2", { family: "ComicNeue" });
 
 const canvas = exportToCanvas(
   elements as any,

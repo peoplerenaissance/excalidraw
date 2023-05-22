@@ -734,7 +734,7 @@ export default function App() {
                 files: excalidrawAPI?.getFiles(),
               });
               const ctx = canvas.getContext("2d");
-              ctx.font = "30px Virgil";
+              ctx.font = "30px ComicNeue";
               ctx.strokeText("My custom text", 50, 60);
               setCanvasUrl(canvas.toDataURL());
             }}
