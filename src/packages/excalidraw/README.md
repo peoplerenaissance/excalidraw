@@ -1019,11 +1019,11 @@ import { FONT_FAMILY } from "@excalidraw/excalidraw";
 
 | Font Family | Description          |
 | ----------- | -------------------- |
-| Virgil      | The handwritten font |
+| ComicNeue   | The handwritten font |
 | Helvetica   | The Normal Font      |
 | Cascadia    | The Code Font        |
 
-Defaults to `FONT_FAMILY.Virgil` unless passed in `initialData.appState.currentItemFontFamily`.
+Defaults to `FONT_FAMILY.ComicNeue` unless passed in `initialData.appState.currentItemFontFamily`.
 
 #### `THEME`
 

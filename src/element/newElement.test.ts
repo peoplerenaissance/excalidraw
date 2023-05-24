@@ -76,7 +76,7 @@ it("clones text element", () => {
     opacity: 100,
     text: "hello",
     fontSize: 20,
-    fontFamily: FONT_FAMILY.Virgil,
+    fontFamily: FONT_FAMILY.ComicNeue,
     textAlign: "left",
     verticalAlign: "top",
   });

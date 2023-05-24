@@ -54,7 +54,7 @@ const elements = [
   },
 ];
 
-registerFont("./public/Virgil.woff2", { family: "Virgil" });
+// registerFont("./public/Virgil.woff2", { family: "Virgil" });
 registerFont("./public/Cascadia.woff2", { family: "Cascadia" });
 registerFont("./public/ProximaNovaRegular/font.woff2", { family: "ProximaNovaRegular" });
 registerFont("./public/ComicNeue/ComicNeue-Regular.woff2", { family: "ComicNeue" });
