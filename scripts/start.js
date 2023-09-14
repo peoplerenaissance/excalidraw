@@ -85,7 +85,6 @@ checkBrowsers(paths.appPath, isInteractive)
     const appName = require(paths.appPackageJson).name;
 
     const useTypeScript = fs.existsSync(paths.appTsConfig);
-    const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === 'true';
     const urls = prepareUrls(
       protocol,
       HOST,
@@ -102,11 +101,9 @@ checkBrowsers(paths.appPath, isInteractive)
     const compiler = createCompiler({
       appName,
       config,
-      devSocket,
       urls,
       useYarn,
       useTypeScript,
-      tscCompileOnError,
       webpack,
     });
     // Load proxy config
