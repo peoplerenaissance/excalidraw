@@ -116,6 +116,7 @@
     "workbox-webpack-plugin": "6.6.1"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@excalidraw/eslint-config": "1.0.0",
     "@excalidraw/prettier-config": "1.0.2",
     "@types/chai": "4.3.0",
