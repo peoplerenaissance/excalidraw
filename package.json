@@ -99,7 +99,7 @@
     "react-dom": "17.0.2",
     "react-refresh": "^0.8.3",
     "resolve": "1.18.1",
-    "resolve-url-loader": "^3.1.2",
+    "resolve-url-loader": "4.0.0",
     "roughjs": "4.5.2",
     "sass": "1.51.0",
     "sass-loader": "^10.0.5",
