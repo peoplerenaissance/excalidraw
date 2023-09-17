@@ -8,6 +8,7 @@ process.env.NODE_ENV = 'development';
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
 process.on('unhandledRejection', err => {
+  console.error('unhandledRejection', err);
   throw err;
 });
 
@@ -118,9 +119,10 @@ checkBrowsers(paths.appPath, isInteractive)
       proxyConfig,
       urls.lanUrlForConfig
     );
-    const devServer = new WebpackDevServer(compiler, serverConfig);
+    const devServer = new WebpackDevServer(serverConfig, compiler);
     // Launch WebpackDevServer.
-    devServer.listen(port, HOST, err => {
+    devServer.startCallback((err) => {
+
       if (err) {
         return console.log(err);
       }
@@ -142,7 +144,9 @@ checkBrowsers(paths.appPath, isInteractive)
 
     ['SIGINT', 'SIGTERM'].forEach(function (sig) {
       process.on(sig, function () {
-        devServer.close();
+        devServer.stopCallback(() => {
+          console.log("Closed");
+        });
         process.exit();
       });
     });
