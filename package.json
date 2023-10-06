@@ -78,7 +78,7 @@
     "mini-css-extract-plugin": "0.11.3",
     "nanoid": "3.3.3",
     "open-color": "1.9.1",
-    "optimize-css-assets-webpack-plugin": "5.0.4",
+    "optimize-css-assets-webpack-plugin": "6.0.1",
     "pako": "1.0.11",
     "perfect-freehand": "1.0.16",
     "png-chunk-text": "1.0.0",
