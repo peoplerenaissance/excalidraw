@@ -47,6 +47,7 @@
     "browser-fs-access": "0.30.1",
     "camelcase": "^6.1.0",
     "case-sensitive-paths-webpack-plugin": "2.3.0",
+    "chokidar": "3.5.3",
     "clsx": "1.1.1",
     "css-loader": "4.3.0",
     "dotenv": "8.2.0",
@@ -133,7 +134,8 @@
     "webpack-cli": "4.10.0"
   },
   "resolutions": {
-    "@typescript-eslint/typescript-estree": "5.10.2"
+    "@typescript-eslint/typescript-estree": "5.10.2",
+    "watchpack-chokidar2/chokidar": "^3.5.3"
   },
   "engines": {
     "node": ">=16.0.0"
