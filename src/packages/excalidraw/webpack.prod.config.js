@@ -37,8 +37,8 @@ module.exports = {
             loader: "postcss-loader",
             options: {
               postcssOptions: {
-                plugins: [autoprefixer()],
-              },
+                plugins: ["postcss-preset-env"],
+              }, 
             },
           },
           "sass-loader",
@@ -63,10 +63,12 @@ module.exports = {
                 ["@babel/preset-react", { runtime: "automatic" }],
                 "@babel/preset-typescript",
               ],
-              plugins: [
-                "transform-class-properties",
-                "@babel/plugin-transform-runtime",
-              ],
+              postcssOptions: {
+                plugins: [
+                  "transform-class-properties",
+                  "@babel/plugin-transform-runtime",
+                ],  
+              },
             },
           },
         ],
