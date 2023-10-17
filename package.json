@@ -137,7 +137,8 @@
   "resolutions": {
     "@typescript-eslint/typescript-estree": "5.10.2",
     "watchpack-chokidar2/chokidar": "^3.5.3",
-    "glob-parent": "^6.0.1"
+    "glob-parent": "^6.0.1", 
+    "semver": "^7.5.3"
   },
   "engines": {
     "node": ">=16.0.0"
