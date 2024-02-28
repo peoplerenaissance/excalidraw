@@ -6,6 +6,7 @@ import { getSceneVersion } from "../../element";
 import { ExcalidrawElement, FileId } from "../../element/types";
 import { BinaryFileData, BinaryFileMetadata, DataURL } from "../../types";
 import Portal from "../collab/Portal";
+import * as Sentry from "@sentry/react";
 
 export const encryptElements = async (
   elements: readonly ExcalidrawElement[],
@@ -161,6 +162,7 @@ export const saveFilesToHttpStorage = async ({
         savedFiles.set(id, true);
       } catch (error: any) {
         erroredFiles.set(id, true);
+        Sentry.captureException(error);
       }
     }),
   );
@@ -212,10 +214,14 @@ export const loadFilesFromHttpStorage = async (
             created: metadata?.created || Date.now(),
           });
         } else if (response.status === 403) {
+          Sentry.captureMessage(`Forbidden file access: ${id}`);
           // Note that we don't consider this an "erroredFile" because we still want
           // other connected clients to be able to load the file
           console.error("File access forbidden", id);
         } else {
+          Sentry.captureMessage(
+            `File access error: ${id} ${response.status} ${response.statusText}`,
+          );
           erroredFiles.set(id, true);
         }
       } catch (error: any) {
