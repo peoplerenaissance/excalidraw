@@ -42,7 +42,7 @@
     "@babel/preset-env": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
     "babel-loader": "8.2.5",
-    "babel-plugin-transform-class-properties": "6.24.1",
+    "@babel/plugin-transform-class-properties": "7.24.1",
     "cross-env": "7.0.3",
     "css-loader": "6.7.1",
     "file-loader": "6.2.0",
@@ -58,8 +58,5 @@
     "build:umd": "cross-env NODE_ENV=production webpack --config webpack.prod.config.js",
     "build:umd:withAnalyzer": "cross-env NODE_ENV=production ANALYZER=true webpack --config webpack.prod.config.js",
     "pack": "yarn build:umd && yarn pack"
-  },
-  "resolutions": {
-    "@babel/traverse": ">=7.23.2"
   }
 }
