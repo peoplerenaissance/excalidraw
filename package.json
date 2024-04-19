@@ -141,15 +141,7 @@
     "watchpack-chokidar2/chokidar": "^3.5.3",
     "glob-parent": "^6.0.1",
     "semver": "^7.5.3", 
-    "postcss": "^8.4.31",
-    "@babel/traverse": ">=7.23.2",
-    "@babel/plugin-transform-runtime": ">=7.23.2",
-    "@babel/preset-env": ">=7.23.2",
-    "@babel/helper-define-polyfill-provider": ">=0.4.3",
-    "babel-plugin-polyfill-corejs2": ">=0.4.6",
-    "babel-plugin-polyfill-corejs3": ">=0.8.5",
-    "babel-plugin-polyfill-es-shims": ">=0.10.0",
-    "babel-plugin-polyfill-regenerator": ">=0.5.3"
+    "postcss": "^8.4.31"
   },
   "engines": {
     "node": ">=16.0.0"
