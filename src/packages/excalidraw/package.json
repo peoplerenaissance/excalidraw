@@ -84,6 +84,13 @@
     "dotenv": "10.0.0"
   },
   "resolutions": {
-    "@babel/traverse": ">=7.23.2"
+    "@babel/traverse": ">=7.23.2",
+    "@babel/plugin-transform-runtime": ">=7.23.2",
+    "@babel/preset-env": ">=7.23.2",
+    "@babel/helper-define-polyfill-provider": ">=0.4.3",
+    "babel-plugin-polyfill-corejs2": ">=0.4.6",
+    "babel-plugin-polyfill-corejs3": ">=0.8.5",
+    "babel-plugin-polyfill-es-shims": ">=0.10.0",
+    "babel-plugin-polyfill-regenerator": ">=0.5.3"
   }
 }
