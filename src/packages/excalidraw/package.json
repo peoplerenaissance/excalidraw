@@ -82,5 +82,8 @@
   },
   "dependencies": {
     "dotenv": "10.0.0"
+  },
+  "resolutions": {
+    "@babel/traverse": "7.23.2"
   }
 }
